@@ -1,3 +1,5 @@
+Warning: you need the Metaspex product to compile this application. Please contact us at info@metaspex.com to get access to the Metaspex product.
+
 This sample Metaspex application leverages documents persistence.
 It is a contacts management application similar to what you can find on regular operating systems.
 All contacts are stored in a database. You can create, retrieve, update and delete contacts.
