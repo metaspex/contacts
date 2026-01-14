@@ -71,7 +71,10 @@ namespace contacts {
 	      "cont", // Tag which will be used to uniquely identify the type in the database.
 	      1, // This is the first version of the contact type. Floating point number to be increased at every layout change.
 	      root, // Metaspex base type. Repeats the base type above.
-	      (_first_name, _middle_name, _last_name, _address)); // Members in meta.
+	      ((_first_name, "fn"), // JSON tag of the slot, as it will appear in the database.
+	       (_middle_name, "mn"),
+	       (_last_name, "ln"),
+	       (_address, "addr"))); // Members in meta.
   public:
     
     // The ctor takes an address_r to require a non-null address.
@@ -105,13 +108,12 @@ namespace contacts {
   private:
     
     slot<
-      string, // Type of the slot.
-      "fn" // JSON tag of the slot, as it will appear in the database.
+      string // Type of the slot.
     > _first_name;
-    slot<string, "mn"> _middle_name;
-    slot<string, "ln"> _last_name;
+    slot<string> _middle_name;
+    slot<string> _last_name;
     // The address of the contact, ready-made from Metaspex's Foundation Ontology.
-    own<address, "addr"> _address;
+    own<address> _address;
   };
   
   // Specification of service payloads.
@@ -123,7 +125,10 @@ namespace contacts {
   class contact_info_payload: public element<>
   {
     HX2A_ELEMENT(contact_info_payload, "contact_info_pld", element,
-		 (_first_name, _middle_name, _last_name, _address));
+		 ((_first_name, "first_name"),
+		  (_middle_name, "middle_name"),
+		  (_last_name, "last_name"),
+		  (_address, "address")));
   public:
     
     contact_info_payload(const contact_r& cont):
@@ -136,11 +141,11 @@ namespace contacts {
     
     // The tags chosen are different from the ones used for contact persistence. Here they are readable.
     // They could be shortened for network frugality.
-    slot<string, "first_name"> _first_name;
-    slot<string, "middle_name"> _middle_name;
-    slot<string, "last_name"> _last_name;
+    slot<string> _first_name;
+    slot<string> _middle_name;
+    slot<string> _last_name;
     // The payload will carry the contact's address as a sub JSON object.
-    own<address, "address"> _address;
+    own<address> _address;
   };
   
   // It's the same contents. Alias for elegance.
@@ -151,10 +156,10 @@ namespace contacts {
   class contact_update_payload: public contact_info_payload
   {
     HX2A_ELEMENT(contact_update_payload, "contact_update_pld", contact_info_payload,
-		 (_id));
+		 ((_id, "id")));
   public:
     
-    slot<doc_id, "id"> _id;
+    slot<doc_id> _id;
   };
   
   // Specification of the services.
@@ -197,7 +202,7 @@ namespace contacts {
       db::connector c{"hx2a"};
       
       // Retrieving the contact. It is a ptr and not a rfr because the document might not exist and get will return null.
-      contact_r cont = contact::get(c, q->get_id()).or_throw<document_does_not_exist>();
+      contact_r cont = root_get<contact>(c, q->get_id()).or_throw<document_does_not_exist>();
       
       // Returning the payload giving information about the contact.
       return make<contact_info_payload>(cont);
@@ -209,7 +214,7 @@ namespace contacts {
       db::connector c{"hx2a"};
       
       // Retrieving the contact. It is a ptr and not a rfr because the document might not exist and get will return null.
-      contact_r cont = contact::get(c, q->_id).or_throw<document_does_not_exist>();
+      contact_r cont = root_get<contact>(c, q->_id).or_throw<document_does_not_exist>();
       
       // If the address is missing from the payload, no address update will happen.
 
@@ -237,7 +242,7 @@ namespace contacts {
       db::connector c{"hx2a"};
       
       // Retrieving the contact. It is a ptr and not a rfr because the document might not exist and get will return null.
-      contact_r cont = contact::get(c, q->get_id()).or_throw<document_does_not_exist>();
+      contact_r cont = root_get<contact>(c, q->get_id()).or_throw<document_does_not_exist>();
       
       // This marks the document for removal, except if a rollback happens before the end of the service. A rollback is automatically
       // triggered in case of exception. As we return right after, the document will be removed.
