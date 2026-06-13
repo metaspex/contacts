@@ -169,7 +169,7 @@ namespace contacts {
   
   // Creation of a contact.
   auto _contact_create = service<"contact_create"> // The name of the service as it'll appear at the end of the URI accepted by the server.
-    ([](const rfr<contact_create_payload>& ccp) -> reply_id_p {
+    ([](const rfr<contact_create_payload>& ccp){
       db::connector c{"hx2a"}; // Connector to the database described in the configuration file under the logical name "hx2a".
       
       // A contact constructor takes a non-null address, we must make sure the client did not forget to send one.
@@ -198,12 +198,14 @@ namespace contacts {
   
   // Retrieval of a contact from its document identifier.
   auto _contact_retrieve = service<"contact_retrieve">
-    ([](const rfr<query_id>& q) -> contact_info_payload_p {
+    ([](const rfr<query_id>& q){
       db::connector c{"hx2a"};
       
       // Retrieving the contact. It is a ptr and not a rfr because the document might not exist and get will return null.
       contact_r cont = root_get<contact>(c, q->get_id()).or_throw<document_does_not_exist>();
-      
+
+      // At this point we could return the contact as-is. As we have a more substantial application with paginated
+      // services below, we create a proper payload which reflects the contents of the contact.
       // Returning the payload giving information about the contact.
       return make<contact_info_payload>(cont);
     });
