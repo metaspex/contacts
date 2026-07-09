@@ -66,15 +66,17 @@ namespace contacts {
   
   class contact: public root<> // A contact is at the top of a document.
   {
-    HX2A_ROOT(
+    HX2A_TYPE(
 	      contact, // Name of the type. Repeats the type above.
 	      "cont", // Tag which will be used to uniquely identify the type in the database.
-	      1, // This is the first version of the contact type. Floating point number to be increased at every layout change.
 	      root, // Metaspex base type. Repeats the base type above.
 	      ((_first_name, "fn"), // JSON tag of the slot, as it will appear in the database.
 	       (_middle_name, "mn"),
 	       (_last_name, "ln"),
 	       (_address, "addr"))); // Members in meta.
+
+    // HX2A_VERSION(1); // This is the first version of the contact type. Floating point number to be increased at every layout change. HX2A_VERSION(1) can be omitted as 1 is default version.
+    
   public:
     
     // The ctor takes an address_r to require a non-null address.
@@ -124,11 +126,11 @@ namespace contacts {
   
   class contact_info_payload: public element<>
   {
-    HX2A_ELEMENT(contact_info_payload, "contact_info_pld", element,
-		 ((_first_name, "first_name"),
-		  (_middle_name, "middle_name"),
-		  (_last_name, "last_name"),
-		  (_address, "address")));
+    HX2A_TYPE(contact_info_payload, "contact_info_pld", element,
+              ((_first_name, "first_name"),
+               (_middle_name, "middle_name"),
+               (_last_name, "last_name"),
+               (_address, "address")));
   public:
     
     contact_info_payload(const contact_r& cont):
@@ -155,8 +157,8 @@ namespace contacts {
   // already defined.
   class contact_update_payload: public contact_info_payload
   {
-    HX2A_ELEMENT(contact_update_payload, "contact_update_pld", contact_info_payload,
-		 ((_id, "id")));
+    HX2A_TYPE(contact_update_payload, "contact_update_pld", contact_info_payload,
+              ((_id, "id")));
   public:
     
     slot<doc_id> _id;
