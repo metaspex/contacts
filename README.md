@@ -1,4 +1,4 @@
-Warning: you need the Metaspex product to compile this application. Please contact us at info@metaspex.com to get access to Metaspex.
+Warning: you need the [Metaspex](http://metaspex.com) product to compile this application. Please contact us at info@metaspex.com to get access to [Metaspex](http://metaspex.com).
 
 This sample Metaspex application leverages documents persistence.
 It is a contacts management application similar to what you can find on regular operating systems.
@@ -44,13 +44,13 @@ To test that the module was properly installed (use port 8080 for the default Ap
 
     curl http://localhost:8081/_
 
-It should display the "Ave" message, which is something like:
+It should display the `"Ave"` message, which is something like:
 
     {"hx2a":"Ave","Nginx version":"1.20.2","hx2a version":"2.0.3","hx2a build date":"Mar 14 2022 09:01:41"}
 
 Testing the various contact handling services yields something like:
 
-###### Contact creation
+#### Contact creation
 
 Omitting the address
 
@@ -60,9 +60,9 @@ Omitting the address
 With a proper address
 
     $ curl http://localhost:8081/contact_create -d '{"first_name": "John", "last_name": "Smith", "address": {"fl": "1 Metaspex Way", "pc": "87501", "cty": "Santa Fe", "reg": "NM"}}'
-{"id":"5d38b96402424dc0992a1a58a4f075f2"}
+    {"id":"5d38b96402424dc0992a1a58a4f075f2"}
 
-The call is successful. Looking at the corresponding document from Couchbase's Console using 5d38b96402424dc0992a1a58a4f075f2 as the document identifier, we find:
+The call is successful. Looking at the corresponding document from Couchbase's Console using `5d38b96402424dc0992a1a58a4f075f2` as the document identifier, we find:
 
     {
       "@T": {
@@ -94,21 +94,21 @@ Note that Couchbase's console has a bug which causes the console to be unable to
 
 We find the JSON tags we specified in the ontology. They are, as specified, different from the ones in the payload. For instance the address tag is `addr` instead of `address`.
 
-###### Contact retrieval
+#### Contact retrieval
 
 Trying to retrieve a contact that does not exist (the two last digits of the document identifier we just got are replaced by `55`):
 
-$ curl http://localhost:8081/contact_retrieve -d '{"id": "5d38b96402424dc0992a1a58a4f07555"}'
-{"@exc":{"code":196,"msg":"No document found."}}
+    $ curl http://localhost:8081/contact_retrieve -d '{"id": "5d38b96402424dc0992a1a58a4f07555"}'
+    {"@exc":{"code":196,"msg":"No document found."}}
 
 Now supplying the right document identifier:
 
     $ curl http://localhost:8081/contact_retrieve -d '{"id": "5d38b96402424dc0992a1a58a4f075f2"}'
     {"first_name":"John","middle_name":"","last_name":"Smith","address":{"rcpt":"","fl":"1 Metaspex Way","sl":"","pc":"87501","cty":"Santa Fe","reg":"NM","ctry":0}}
 
-Here also, the JSON tags are the ones specified in the contact_info type.
+Here also, the JSON tags are the ones specified in the `contact_info` type.
 
-###### Contact update
+#### Contact update
 
 Changing the street number from `1` to `2`:
 
@@ -124,7 +124,7 @@ Retrieving the updated document using the former service yields:
 
 The update happened.
 
-###### Contact deletion
+#### Contact deletion
 
     $ curl http://localhost:8081/contact_delete -d '{"id": "5d38b96402424dc0992a1a58a4f075f2"}'
     {}
@@ -134,7 +134,7 @@ Trying to retrieve the document after that yields:
     $ curl http://localhost:8081/contact_retrieve -d '{"id": "5d38b96402424dc0992a1a58a4f075f2"}'
     {"@exc":{"code":196,"msg":"No document found."}}
 
-###### Browsing through contacts (using paginated services)
+#### Browsing through contacts (using paginated services)
 
 When no contacts are present, here is what the paginated services open service yields:
 
@@ -150,4 +150,4 @@ After creating a bunch of contacts, here is what the paginated services open ser
 
 The contacts are returned sorted by lexicographic order of last name, first name, middle name, and city name.
 
-If we had even more contacts, we could use contact_list_next and contact_list_prev services, which have automatically been generated, to navigate through contacts.
+If we had even more contacts, we could use `contact_list_next` and `contact_list_prev` services, which have automatically been generated, to navigate through contacts.
