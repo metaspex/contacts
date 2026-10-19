@@ -1,5 +1,5 @@
 //
-// Copyright Metaspex - 2023
+// Copyright Metaspex - 2026
 // mailto:admin@metaspex.com
 //
 
